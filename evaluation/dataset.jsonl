@@ -1,0 +1,2 @@
+{"id":"1","question":"I was charged twice for my premium subscription.","context":{"product":"premium","region":"IN","customer_segment":"student"},"gold_evidence_ids":["policy-refund-v3","faq-double-charge"],"gold_resolution":"A confirmed duplicate premium charge is eligible for a refund under the current policy."}
+{"id":"2","question":"How can I cancel my subscription?","context":{"product":"subscription","region":"IN"},"gold_evidence_ids":["cancel-policy"],"gold_resolution":"Cancel from account settings; cancellation stops future renewals."}

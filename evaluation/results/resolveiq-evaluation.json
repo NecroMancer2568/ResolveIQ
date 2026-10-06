@@ -1,0 +1,1168 @@
+{
+  "dataset": {
+    "examples": 30,
+    "path": "/Users/enigma/Documents/resolveiq-final/evaluation/resolveiq-evaluation-dataset.jsonl"
+  },
+  "retrieval": {
+    "recall_at_1": 86.67,
+    "recall_at_3": 100.0,
+    "recall_at_5": 100.0,
+    "precision_at_3": 42.22,
+    "mrr": 1.0,
+    "ndcg_at_5": 1.0,
+    "evidence_coverage": 96.67
+  },
+  "generation": {
+    "groundedness": 26.23
+  },
+  "decision_quality": {
+    "overall_accuracy": 86.67,
+    "resolution_accuracy": 86.67,
+    "clarify_accuracy": 80.0,
+    "abstention_accuracy": 83.33,
+    "conflict_escalation_accuracy": 100.0
+  },
+  "latency": {
+    "mean_time_to_draft_seconds": 4.4573,
+    "min_seconds": 2.9232,
+    "max_seconds": 19.0882
+  },
+  "human_review": {
+    "acceptance_rate": "N/A",
+    "edit_distance": "N/A",
+    "time_to_resolution": "N/A",
+    "note": "These metrics require human-review and ticket-resolution telemetry."
+  },
+  "per_example": [
+    {
+      "id": "eval-01",
+      "question": "I received my order 4 days ago and I want to return the physical product. Can I get a refund?",
+      "gold_evidence_ids": [
+        "refunds-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "refunds-1-0",
+        "payments-1-0",
+        "shipping-1-0",
+        "subscriptions-1-0",
+        "warranty-1-0",
+        "accounts-1-0"
+      ],
+      "generated_evidence_ids": [
+        "refunds-1-0"
+      ],
+      "expected_action": "RESOLVE",
+      "predicted_action": "RESOLVE",
+      "decision_correct": true,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.3333333333333333,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.3,
+      "clarify_correct": null,
+      "abstain_correct": null,
+      "escalate_correct": null,
+      "resolve_correct": true,
+      "latency_seconds": 19.088192707997223,
+      "draft_response": "Thank you for reaching out. Since you received your physical product 4 days ago, you are eligible to request a refund under our standard return policy. Please make sure the product is unused and returned with its original packaging and all included accessories. Once we receive and inspect your return, we will initiate your refund within 5 business days. If you have any other questions or need assistance with the return process, please let us know.",
+      "gold_resolution": "Eligible physical products can normally be refunded within 30 calendar days of delivery if they are unused and returned with original packaging and included accessories.",
+      "confidence": 0.695
+    },
+    {
+      "id": "eval-02",
+      "question": "My item arrived damaged yesterday. Can I request a refund?",
+      "gold_evidence_ids": [
+        "refunds-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "refunds-1-0",
+        "shipping-1-0",
+        "payments-1-0",
+        "warranty-1-0",
+        "subscriptions-1-0",
+        "accounts-1-0"
+      ],
+      "generated_evidence_ids": [
+        "refunds-1-0",
+        "shipping-1-0"
+      ],
+      "expected_action": "RESOLVE",
+      "predicted_action": "RESOLVE",
+      "decision_correct": true,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.3333333333333333,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.3,
+      "clarify_correct": null,
+      "abstain_correct": null,
+      "escalate_correct": null,
+      "resolve_correct": true,
+      "latency_seconds": 3.6201168339975993,
+      "draft_response": "We're sorry to hear that your item arrived damaged. You can request a refund as long as the damage was reported within 7 days of delivery, which your report meets. Please provide photographs or other evidence of the damage if possible. Once we receive and inspect the returned product, we'll initiate your refund promptly, usually within 5 business days. Please let us know if you need assistance with the return process.",
+      "gold_resolution": "Report the damaged item within 7 days of delivery. Photos or other evidence may be requested before a replacement or refund is approved.",
+      "confidence": 0.695
+    },
+    {
+      "id": "eval-03",
+      "question": "How long does a normal domestic delivery take after dispatch?",
+      "gold_evidence_ids": [
+        "shipping-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "shipping-1-0",
+        "refunds-1-0",
+        "payments-1-0",
+        "warranty-1-0",
+        "subscriptions-1-0",
+        "accounts-1-0"
+      ],
+      "generated_evidence_ids": [
+        "shipping-1-0"
+      ],
+      "expected_action": "RESOLVE",
+      "predicted_action": "ABSTAIN",
+      "decision_correct": false,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.3333333333333333,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.125,
+      "clarify_correct": null,
+      "abstain_correct": null,
+      "escalate_correct": null,
+      "resolve_correct": false,
+      "latency_seconds": 3.119661457996699,
+      "draft_response": "Thank you for reaching out. For standard domestic orders in India, delivery generally takes 3 to 7 business days after the order has been dispatched. Please note that the delivery date shown at checkout is an estimate and cannot be guaranteed. If you have any other questions or need assistance tracking your order, feel free to ask.",
+      "gold_resolution": "Standard domestic delivery is normally 3–7 business days after dispatch; the checkout date is an estimate, not a guaranteed delivery date.",
+      "confidence": 0.501
+    },
+    {
+      "id": "eval-04",
+      "question": "My tracking has not changed for four days. What should support do?",
+      "gold_evidence_ids": [
+        "shipping-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "shipping-1-0",
+        "accounts-1-0",
+        "payments-1-0",
+        "subscriptions-1-0",
+        "refunds-1-0",
+        "warranty-1-0"
+      ],
+      "generated_evidence_ids": [
+        "shipping-1-0"
+      ],
+      "expected_action": "RESOLVE",
+      "predicted_action": "RESOLVE",
+      "decision_correct": true,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.3333333333333333,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.3,
+      "clarify_correct": null,
+      "abstain_correct": null,
+      "escalate_correct": null,
+      "resolve_correct": true,
+      "latency_seconds": 3.842121916997712,
+      "draft_response": "Thank you for reaching out. We see that your tracking information has not updated for a few days. We will verify the current status with the carrier and provide you with the latest estimated delivery date shortly. Please note that standard delivery times are 3 to 7 business days after dispatch, and tracking updates can sometimes be delayed. We appreciate your patience and will keep you informed.",
+      "gold_resolution": "When tracking has not updated for 72 hours, verify the carrier status. If the package is still moving, provide the latest estimated delivery information.",
+      "confidence": 0.695
+    },
+    {
+      "id": "eval-05",
+      "question": "I was charged twice for the same order. What should happen next?",
+      "gold_evidence_ids": [
+        "payments-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "payments-1-0",
+        "subscriptions-1-0",
+        "refunds-1-0",
+        "shipping-1-0",
+        "warranty-1-0",
+        "accounts-1-0"
+      ],
+      "generated_evidence_ids": [
+        "payments-1-0"
+      ],
+      "expected_action": "RESOLVE",
+      "predicted_action": "CLARIFY",
+      "decision_correct": false,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.3333333333333333,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.1,
+      "clarify_correct": null,
+      "abstain_correct": null,
+      "escalate_correct": null,
+      "resolve_correct": false,
+      "latency_seconds": 3.079935458001273,
+      "draft_response": "Thank you for reaching out. We understand your concern about being charged twice for the same order. We'll review the transactions to determine if one charge was only a temporary authorization. If both charges were captured, we will process a refund or reversal accordingly. We appreciate your patience while we investigate this for you.",
+      "gold_resolution": "First determine whether one charge is only a temporary authorization. If both transactions were captured, Payments should review the duplicate for reversal or refund.",
+      "confidence": 0.495
+    },
+    {
+      "id": "eval-06",
+      "question": "My card payment is showing as pending. When exactly will the authorization disappear?",
+      "gold_evidence_ids": [
+        "payments-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "payments-1-0",
+        "refunds-1-0",
+        "subscriptions-1-0",
+        "accounts-1-0",
+        "shipping-1-0",
+        "warranty-1-0"
+      ],
+      "generated_evidence_ids": [
+        "payments-1-0"
+      ],
+      "expected_action": "RESOLVE",
+      "predicted_action": "RESOLVE",
+      "decision_correct": true,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.3333333333333333,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.333,
+      "clarify_correct": null,
+      "abstain_correct": null,
+      "escalate_correct": null,
+      "resolve_correct": true,
+      "latency_seconds": 2.9231876249978086,
+      "draft_response": "Your card payment is showing as pending because authorization is still in place. Please note that a pending authorization usually disappears automatically if the transaction is not captured, but we cannot give an exact time frame for when this will happen as it depends on your card payment provider. If you need further assistance, feel free to reach out.",
+      "gold_resolution": "A pending authorization may disappear automatically if it is not captured, but support should not promise an exact release time because it depends on the payment provider.",
+      "confidence": 0.703
+    },
+    {
+      "id": "eval-07",
+      "question": "How do I reset my NovaMart password?",
+      "gold_evidence_ids": [
+        "accounts-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "accounts-1-0",
+        "payments-1-0",
+        "subscriptions-1-0",
+        "warranty-1-0",
+        "shipping-1-0",
+        "refunds-1-0"
+      ],
+      "generated_evidence_ids": [
+        "accounts-1-0"
+      ],
+      "expected_action": "RESOLVE",
+      "predicted_action": "RESOLVE",
+      "decision_correct": true,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.3333333333333333,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.583,
+      "clarify_correct": null,
+      "abstain_correct": null,
+      "escalate_correct": null,
+      "resolve_correct": true,
+      "latency_seconds": 3.441410084000381,
+      "draft_response": "Thank you for contacting NovaMart support. To reset your password, please use the password reset option on our website by entering your registered email address. You will receive a confidential reset link via email. Follow the link to securely create a new password. If your account is locked or you face any issues, please let us know so we can guide you through the proper account recovery process. Remember to keep your reset link confidential and avoid sharing it or your password with anyone.",
+      "gold_resolution": "Start a password reset using the registered email address and keep the reset link confidential.",
+      "confidence": 0.765
+    },
+    {
+      "id": "eval-08",
+      "question": "My account is locked after several failed login attempts. How should I recover it?",
+      "gold_evidence_ids": [
+        "accounts-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "accounts-1-0",
+        "subscriptions-1-0",
+        "payments-1-0",
+        "refunds-1-0",
+        "warranty-1-0",
+        "shipping-1-0"
+      ],
+      "generated_evidence_ids": [
+        "accounts-1-0"
+      ],
+      "expected_action": "RESOLVE",
+      "predicted_action": "RESOLVE",
+      "decision_correct": true,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.3333333333333333,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.375,
+      "clarify_correct": null,
+      "abstain_correct": null,
+      "escalate_correct": null,
+      "resolve_correct": true,
+      "latency_seconds": 4.013101458003803,
+      "draft_response": "We understand your account has been temporarily locked after several failed login attempts. To regain access, please initiate the password reset using your registered email address through the official recovery procedure. This ensures security and compliance with our policies. If you do not receive the reset link or face any issues, please let us know, and we will assist further.",
+      "gold_resolution": "Use the approved account recovery procedure rather than bypassing security controls.",
+      "confidence": 0.713
+    },
+    {
+      "id": "eval-09",
+      "question": "If I cancel my subscription today, will the current period be refunded?",
+      "gold_evidence_ids": [
+        "subscriptions-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "subscriptions-1-0",
+        "refunds-1-0",
+        "payments-1-0",
+        "warranty-1-0",
+        "shipping-1-0",
+        "accounts-1-0"
+      ],
+      "generated_evidence_ids": [
+        "subscriptions-1-0"
+      ],
+      "expected_action": "RESOLVE",
+      "predicted_action": "RESOLVE",
+      "decision_correct": true,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.3333333333333333,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.333,
+      "clarify_correct": null,
+      "abstain_correct": null,
+      "escalate_correct": null,
+      "resolve_correct": true,
+      "latency_seconds": 3.247538457995688,
+      "draft_response": "Thank you for contacting us. Per NovaMart's Subscription & Cancellation Policy, cancelling your subscription stops the next renewal but does not refund the current active period. If you have any further questions or need assistance with your subscription, please let us know.",
+      "gold_resolution": "Cancellation normally stops the next renewal but does not automatically refund a subscription period that has already started.",
+      "confidence": 0.703
+    },
+    {
+      "id": "eval-10",
+      "question": "I was unexpectedly renewed for my subscription. Can I get a refund?",
+      "gold_evidence_ids": [
+        "subscriptions-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "subscriptions-1-0",
+        "refunds-1-0",
+        "payments-1-0",
+        "shipping-1-0",
+        "warranty-1-0",
+        "accounts-1-0"
+      ],
+      "generated_evidence_ids": [
+        "subscriptions-1-0",
+        "refunds-1-0"
+      ],
+      "expected_action": "RESOLVE",
+      "predicted_action": "RESOLVE",
+      "decision_correct": true,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.3333333333333333,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.429,
+      "clarify_correct": null,
+      "abstain_correct": null,
+      "escalate_correct": null,
+      "resolve_correct": true,
+      "latency_seconds": 4.016252875000646,
+      "draft_response": "Hello, we understand your concern about the unexpected subscription renewal. Our policy states that subscriptions renew according to the billing cycle and cancellations prevent future renewals but do not automatically refund the current period. Refunds for digital subscriptions are generally not provided after activation, unless exceptions apply. We will verify your renewal transaction and plan terms to check if this falls under an exception. If eligible, we will process your refund as per our policy. Otherwise, we appreciate your understanding. Please let us know if you have any further questions.",
+      "gold_resolution": "Verify the renewal transaction and applicable plan terms before promising a refund. Eligible exceptions should be reviewed by Subscription Operations.",
+      "confidence": 0.727
+    },
+    {
+      "id": "eval-11",
+      "question": "My product may have a manufacturing defect. What do I need to submit for a warranty claim?",
+      "gold_evidence_ids": [
+        "warranty-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "warranty-1-0",
+        "refunds-1-0",
+        "shipping-1-0",
+        "subscriptions-1-0",
+        "payments-1-0",
+        "accounts-1-0"
+      ],
+      "generated_evidence_ids": [
+        "warranty-1-0"
+      ],
+      "expected_action": "RESOLVE",
+      "predicted_action": "RESOLVE",
+      "decision_correct": true,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.3333333333333333,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.1,
+      "clarify_correct": null,
+      "abstain_correct": null,
+      "escalate_correct": null,
+      "resolve_correct": true,
+      "latency_seconds": 3.7777164580038516,
+      "draft_response": "Thank you for reaching out regarding your product issue. To proceed with your warranty claim, please provide your order number and a detailed description of the problem. We may also ask for photos or diagnostic details to better understand the issue. After we confirm your warranty eligibility, we'll guide you through the repair or replacement process. If you have any further questions, feel free to ask.",
+      "gold_resolution": "Provide the order number and a description of the problem. Photos or diagnostic information may be requested when appropriate.",
+      "confidence": 0.645
+    },
+    {
+      "id": "eval-12",
+      "question": "My approved refund still has not appeared. What should support check?",
+      "gold_evidence_ids": [
+        "payments-1-0",
+        "refunds-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "payments-1-0",
+        "refunds-1-0",
+        "subscriptions-1-0",
+        "shipping-1-0",
+        "warranty-1-0",
+        "accounts-1-0"
+      ],
+      "generated_evidence_ids": [
+        "payments-1-0",
+        "refunds-1-0"
+      ],
+      "expected_action": "RESOLVE",
+      "predicted_action": "RESOLVE",
+      "decision_correct": true,
+      "recall_at_1": 0.5,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.6666666666666666,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.375,
+      "clarify_correct": null,
+      "abstain_correct": null,
+      "escalate_correct": null,
+      "resolve_correct": true,
+      "latency_seconds": 4.377305458001501,
+      "draft_response": "We understand your concern regarding the missing refund. We will verify the refund transaction and confirm the processing date. Typically, refunds appear within 5 business days after approval, subject to bank processing times. If this timeframe has passed and you still have not received your refund, we will escalate the matter to our Payments team to investigate and resolve it promptly.",
+      "gold_resolution": "Verify the refund transaction and processing date. If the internal processing window has passed and normal banking delay has also passed, escalate to Payments.",
+      "confidence": 0.713
+    },
+    {
+      "id": "eval-13",
+      "question": "Can I change my delivery address after ordering?",
+      "gold_evidence_ids": [
+        "shipping-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "shipping-1-0",
+        "payments-1-0",
+        "refunds-1-0",
+        "accounts-1-0",
+        "warranty-1-0",
+        "subscriptions-1-0"
+      ],
+      "generated_evidence_ids": [
+        "shipping-1-0"
+      ],
+      "expected_action": "RESOLVE",
+      "predicted_action": "RESOLVE",
+      "decision_correct": true,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.3333333333333333,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.0,
+      "clarify_correct": null,
+      "abstain_correct": null,
+      "escalate_correct": null,
+      "resolve_correct": true,
+      "latency_seconds": 3.6971063329983735,
+      "draft_response": "You can change your delivery address only if your order has not yet shipped. Please contact us as soon as possible to update your address. If the order has already been handed over to the carrier, address changes depend on the carrier's policies and may not be possible. Let us know your order details, and we'll assist you further.",
+      "gold_resolution": "If the order has not shipped, Operations may be able to update the address. After carrier handoff, changes depend on carrier capabilities.",
+      "confidence": 0.62
+    },
+    {
+      "id": "eval-14",
+      "question": "I downloaded a digital product and now I want a refund. Is that allowed?",
+      "gold_evidence_ids": [
+        "refunds-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "refunds-1-0",
+        "payments-1-0",
+        "subscriptions-1-0",
+        "shipping-1-0",
+        "warranty-1-0",
+        "accounts-1-0"
+      ],
+      "generated_evidence_ids": [
+        "refunds-1-0"
+      ],
+      "expected_action": "RESOLVE",
+      "predicted_action": "RESOLVE",
+      "decision_correct": true,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.3333333333333333,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.25,
+      "clarify_correct": null,
+      "abstain_correct": null,
+      "escalate_correct": null,
+      "resolve_correct": true,
+      "latency_seconds": 3.3648702499995125,
+      "draft_response": "Thank you for contacting us. As per our refund policy, digital products are non-refundable after download or activation except where required by applicable law. Since you have downloaded the product, we are unable to process a refund at this time. If you believe there is a specific issue or legal entitlement, please provide further details, and we will review your case accordingly.",
+      "gold_resolution": "Digital products are non-refundable after download or activation except where required by applicable law.",
+      "confidence": 0.682
+    },
+    {
+      "id": "eval-15",
+      "question": "I noticed a login from a device I do not recognize. What should I do?",
+      "gold_evidence_ids": [
+        "accounts-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "accounts-1-0",
+        "payments-1-0",
+        "warranty-1-0",
+        "refunds-1-0",
+        "subscriptions-1-0",
+        "shipping-1-0"
+      ],
+      "generated_evidence_ids": [
+        "accounts-1-0"
+      ],
+      "expected_action": "ESCALATE",
+      "predicted_action": "ESCALATE",
+      "decision_correct": true,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.3333333333333333,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.25,
+      "clarify_correct": null,
+      "abstain_correct": null,
+      "escalate_correct": true,
+      "resolve_correct": null,
+      "latency_seconds": 4.172567000001436,
+      "draft_response": "We take your account security very seriously. Since you've noticed a login from an unfamiliar device, we have escalated your case to our Account Security team for further investigation. In the meantime, please change your password as soon as possible through the official password recovery process to secure your account. Also, review your recent account activity and let us know if you see anything suspicious.",
+      "gold_resolution": "Recommend changing the password through the official recovery flow and reviewing recent account activity. Suspected compromise should be escalated to Account Security.",
+      "confidence": 0.532
+    },
+    {
+      "id": "eval-16",
+      "question": "I was charged twice. Can you fix it?",
+      "gold_evidence_ids": [
+        "subscriptions-1-0",
+        "payments-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "payments-1-0",
+        "subscriptions-1-0",
+        "warranty-1-0",
+        "refunds-1-0",
+        "shipping-1-0",
+        "accounts-1-0"
+      ],
+      "generated_evidence_ids": [
+        "payments-1-0",
+        "refunds-1-0"
+      ],
+      "expected_action": "CLARIFY",
+      "predicted_action": "CLARIFY",
+      "decision_correct": true,
+      "recall_at_1": 0.5,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.6666666666666666,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 0.5,
+      "groundedness": 0.1,
+      "clarify_correct": true,
+      "abstain_correct": null,
+      "escalate_correct": null,
+      "resolve_correct": null,
+      "latency_seconds": 3.804883709002752,
+      "draft_response": "Thank you for contacting us about the duplicate charge. We will first verify whether one of these charges was just a temporary authorization or if both were captured transactions. If both charges were captured, we will initiate a review and proceed with a refund or reversal as applicable. Typically, refunds are processed within 5 to 7 business days after approval. We appreciate your patience and will update you once the review is complete.",
+      "gold_resolution": "Clarify which transaction was duplicated and whether the two charges are for the same order, a subscription renewal, or an authorization versus captured charge before promising a remedy.",
+      "confidence": 0.495
+    },
+    {
+      "id": "eval-17",
+      "question": "I want my money back for an order.",
+      "gold_evidence_ids": [
+        "payments-1-0",
+        "refunds-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "refunds-1-0",
+        "payments-1-0",
+        "shipping-1-0",
+        "subscriptions-1-0",
+        "accounts-1-0",
+        "warranty-1-0"
+      ],
+      "generated_evidence_ids": [
+        "payments-1-0",
+        "refunds-1-0",
+        "shipping-1-0"
+      ],
+      "expected_action": "CLARIFY",
+      "predicted_action": "CLARIFY",
+      "decision_correct": true,
+      "recall_at_1": 0.5,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.6666666666666666,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.375,
+      "clarify_correct": true,
+      "abstain_correct": null,
+      "escalate_correct": null,
+      "resolve_correct": null,
+      "latency_seconds": 3.7900062080007046,
+      "draft_response": "Thank you for reaching out regarding your refund request. To assist you better, could you please specify the reason for your refund? For example, is it due to returning an unused item, receiving a damaged or incorrect item, or a refund that was approved but not yet received? This information will help us process your request promptly according to our policy.",
+      "gold_resolution": "Clarify whether this is a standard return, a damaged or incorrect item, or an already-approved refund that has not arrived.",
+      "confidence": 0.563
+    },
+    {
+      "id": "eval-18",
+      "question": "My package is late. What can you do?",
+      "gold_evidence_ids": [
+        "shipping-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "shipping-1-0",
+        "refunds-1-0",
+        "subscriptions-1-0",
+        "payments-1-0",
+        "warranty-1-0",
+        "accounts-1-0"
+      ],
+      "generated_evidence_ids": [
+        "shipping-1-0"
+      ],
+      "expected_action": "CLARIFY",
+      "predicted_action": "CLARIFY",
+      "decision_correct": true,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.3333333333333333,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.333,
+      "clarify_correct": true,
+      "abstain_correct": null,
+      "escalate_correct": null,
+      "resolve_correct": null,
+      "latency_seconds": 3.3949309590025223,
+      "draft_response": "Thank you for reaching out about your package delay. Could you please provide the tracking number and let us know how many days past the expected delivery date your package is? This will help us verify the carrier status and provide you with the latest updates or next steps to resolve the issue.",
+      "gold_resolution": "Clarify how long it has been since dispatch and whether tracking has been inactive for at least 72 hours before determining the next step.",
+      "confidence": 0.553
+    },
+    {
+      "id": "eval-19",
+      "question": "My subscription bill looks wrong.",
+      "gold_evidence_ids": [
+        "subscriptions-1-0",
+        "payments-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "subscriptions-1-0",
+        "payments-1-0",
+        "accounts-1-0",
+        "refunds-1-0",
+        "warranty-1-0",
+        "shipping-1-0"
+      ],
+      "generated_evidence_ids": [
+        "subscriptions-1-0",
+        "payments-1-0"
+      ],
+      "expected_action": "CLARIFY",
+      "predicted_action": "CLARIFY",
+      "decision_correct": true,
+      "recall_at_1": 0.5,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.6666666666666666,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.25,
+      "clarify_correct": true,
+      "abstain_correct": null,
+      "escalate_correct": null,
+      "resolve_correct": null,
+      "latency_seconds": 3.4617753329948755,
+      "draft_response": "Thank you for reaching out. To assist you better with your subscription billing issue, could you please provide more details about the transaction you believe is incorrect? For example, is it related to a renewal charge, a duplicate payment, or something else? This information will help us investigate and resolve the issue promptly.",
+      "gold_resolution": "Clarify whether the issue is a renewal, duplicate charge, plan change, or another billing discrepancy before promising a refund or adjustment.",
+      "confidence": 0.532
+    },
+    {
+      "id": "eval-20",
+      "question": "Can I get this product replaced?",
+      "gold_evidence_ids": [
+        "warranty-1-0",
+        "refunds-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "warranty-1-0",
+        "refunds-1-0",
+        "shipping-1-0",
+        "subscriptions-1-0",
+        "accounts-1-0",
+        "payments-1-0"
+      ],
+      "generated_evidence_ids": [
+        "warranty-1-0"
+      ],
+      "expected_action": "CLARIFY",
+      "predicted_action": "RESOLVE",
+      "decision_correct": false,
+      "recall_at_1": 0.5,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.6666666666666666,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 0.5,
+      "groundedness": 0.2,
+      "clarify_correct": false,
+      "abstain_correct": null,
+      "escalate_correct": null,
+      "resolve_correct": null,
+      "latency_seconds": 3.94929137500003,
+      "draft_response": "Thank you for reaching out. To assess if your product can be replaced, please provide your order number and describe the issue you're experiencing. Photos or diagnostic information may also be helpful. If your product is covered under our limited warranty for manufacturing defects, we will review the case and determine the best solution, which may include repair or replacement. Please note that warranty does not cover normal wear, accidental damage, misuse, unauthorized modifications, or damage from incompatible accessories.",
+      "gold_resolution": "Clarify whether the product is defective, damaged, incorrect, or simply being returned, because the applicable resolution path differs.",
+      "confidence": 0.67
+    },
+    {
+      "id": "eval-21",
+      "question": "What is the exact warranty duration for my product?",
+      "gold_evidence_ids": [
+        "warranty-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "warranty-1-0",
+        "shipping-1-0",
+        "refunds-1-0",
+        "subscriptions-1-0",
+        "payments-1-0",
+        "accounts-1-0"
+      ],
+      "generated_evidence_ids": [
+        "warranty-1-0"
+      ],
+      "expected_action": "ABSTAIN",
+      "predicted_action": "ABSTAIN",
+      "decision_correct": true,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.3333333333333333,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.4,
+      "clarify_correct": null,
+      "abstain_correct": true,
+      "escalate_correct": null,
+      "resolve_correct": null,
+      "latency_seconds": 5.402259458001936,
+      "draft_response": "Thank you for your inquiry regarding the warranty duration of your product. Our warranty policy provides coverage for manufacturing defects for the period specified on your product's page or warranty record. Unfortunately, the exact duration is not included in the general policy documents. Please check your product page or warranty record for the specific warranty period applicable to your product. If you are unable to locate this information or if there is any discrepancy, please let us know so we can escalate your case for further review.",
+      "gold_resolution": "Do not invent a duration. The warranty policy says the period is specified on the product page or warranty record; request or verify that source.",
+      "confidence": 0.57
+    },
+    {
+      "id": "eval-22",
+      "question": "My plan terms say I should receive a refund after cancellation. Can you guarantee it?",
+      "gold_evidence_ids": [
+        "subscriptions-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "subscriptions-1-0",
+        "refunds-1-0",
+        "shipping-1-0",
+        "payments-1-0",
+        "warranty-1-0",
+        "accounts-1-0"
+      ],
+      "generated_evidence_ids": [
+        "subscriptions-1-0",
+        "refunds-1-0"
+      ],
+      "expected_action": "ABSTAIN",
+      "predicted_action": "RESOLVE",
+      "decision_correct": false,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.3333333333333333,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.375,
+      "clarify_correct": null,
+      "abstain_correct": false,
+      "escalate_correct": null,
+      "resolve_correct": null,
+      "latency_seconds": 4.493594208004652,
+      "draft_response": "Thank you for your inquiry. According to our subscription and refund policies, cancellation stops the next billing period but does not automatically result in a refund for the already started subscription period. Refunds depend on the type of product and specific refund eligibility criteria. If you believe you qualify for a refund, please let us know, and we will review your request accordingly.",
+      "gold_resolution": "Do not guarantee a refund without verifying the applicable plan terms. Escalate to Subscription Operations if the terms do not clearly determine the outcome.",
+      "confidence": 0.713
+    },
+    {
+      "id": "eval-23",
+      "question": "The carrier says my package is lost. Can you promise a refund immediately?",
+      "gold_evidence_ids": [
+        "shipping-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "shipping-1-0",
+        "refunds-1-0",
+        "payments-1-0",
+        "subscriptions-1-0",
+        "warranty-1-0",
+        "accounts-1-0"
+      ],
+      "generated_evidence_ids": [
+        "shipping-1-0"
+      ],
+      "expected_action": "ABSTAIN",
+      "predicted_action": "ABSTAIN",
+      "decision_correct": true,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.3333333333333333,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.1,
+      "clarify_correct": null,
+      "abstain_correct": true,
+      "escalate_correct": null,
+      "resolve_correct": null,
+      "latency_seconds": 4.323394333994656,
+      "draft_response": "Thank you for contacting us. We understand that your package has been reported lost by the carrier. Please note that per our shipping policy, we cannot promise a refund until the required lost-package investigation is completed. We appreciate your patience while we work to resolve this matter. We will update you as soon as there is further information.",
+      "gold_resolution": "Do not promise an immediate refund before the required investigation is complete.",
+      "confidence": 0.495
+    },
+    {
+      "id": "eval-24",
+      "question": "My product page says the warranty covers this, but I cannot access the warranty record. Which one is correct?",
+      "gold_evidence_ids": [
+        "warranty-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "warranty-1-0",
+        "shipping-1-0",
+        "refunds-1-0",
+        "subscriptions-1-0",
+        "accounts-1-0",
+        "payments-1-0"
+      ],
+      "generated_evidence_ids": [
+        "warranty-1-0"
+      ],
+      "expected_action": "ESCALATE",
+      "predicted_action": "ESCALATE",
+      "decision_correct": true,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.3333333333333333,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.25,
+      "clarify_correct": null,
+      "abstain_correct": null,
+      "escalate_correct": true,
+      "resolve_correct": null,
+      "latency_seconds": 4.5084447499975795,
+      "draft_response": "Thank you for reaching out. We understand your concern regarding the conflicting warranty information. Our policy covers warranty as specified on either the product page or warranty record, and if these disagree, the case requires further review. We have escalated your case to the appropriate team to clarify your warranty coverage. We will update you as soon as possible with the accurate details. We appreciate your patience.",
+      "gold_resolution": "Do not make a definitive promise when the product page and warranty record disagree. Escalate for review.",
+      "confidence": 0.532
+    },
+    {
+      "id": "eval-25",
+      "question": "The bank says the refund is delayed, but I do not know when it was processed. When will I receive it?",
+      "gold_evidence_ids": [
+        "payments-1-0",
+        "refunds-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "refunds-1-0",
+        "payments-1-0",
+        "subscriptions-1-0",
+        "shipping-1-0",
+        "accounts-1-0",
+        "warranty-1-0"
+      ],
+      "generated_evidence_ids": [
+        "payments-1-0",
+        "refunds-1-0"
+      ],
+      "expected_action": "ABSTAIN",
+      "predicted_action": "ABSTAIN",
+      "decision_correct": true,
+      "recall_at_1": 0.5,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.6666666666666666,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.4,
+      "clarify_correct": null,
+      "abstain_correct": true,
+      "escalate_correct": null,
+      "resolve_correct": null,
+      "latency_seconds": 4.096689208003227,
+      "draft_response": "Thank you for reaching out. To provide an accurate estimate of when you will receive your refund, we need to confirm the date when the refund was processed on our end. Generally, refunds are initiated within 5 business days after the approved return is received and inspected. After that, it may take additional time for your bank or card provider to reflect the credit. If you can verify the processing date or if it has been more than 5 business days since the refund was approved, please let us know so we can escalate this to our Payments team for further assistance.",
+      "gold_resolution": "Do not promise an arrival date. First verify the refund transaction and processing date; if the internal window has passed and normal banking delay has passed, escalate to Payments.",
+      "confidence": 0.57
+    },
+    {
+      "id": "eval-26",
+      "question": "A support agent asked me to send my full card number and CVV so they can check the duplicate charge. Should I send it?",
+      "gold_evidence_ids": [
+        "payments-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "payments-1-0",
+        "accounts-1-0",
+        "refunds-1-0",
+        "warranty-1-0",
+        "subscriptions-1-0",
+        "shipping-1-0"
+      ],
+      "generated_evidence_ids": [
+        "accounts-1-0",
+        "payments-1-0"
+      ],
+      "expected_action": "ABSTAIN",
+      "predicted_action": "ABSTAIN",
+      "decision_correct": true,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.3333333333333333,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.0,
+      "clarify_correct": null,
+      "abstain_correct": true,
+      "escalate_correct": null,
+      "resolve_correct": null,
+      "latency_seconds": 4.64610654200078,
+      "draft_response": "For your security, please do not share your full card number, CVV, or any sensitive payment information with support agents. We are able to investigate duplicate charges using transaction data without requiring your full card details. Please provide other relevant information about the transaction, and our Payments team will assist you accordingly.",
+      "gold_resolution": "No. Support must never ask for a full card number or CVV. Continue using the approved payment-support process without sharing those secrets.",
+      "confidence": 0.47
+    },
+    {
+      "id": "eval-27",
+      "question": "Can I send my one-time authentication code to support so they can unlock my account?",
+      "gold_evidence_ids": [
+        "accounts-1-0",
+        "payments-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "accounts-1-0",
+        "payments-1-0",
+        "subscriptions-1-0",
+        "warranty-1-0",
+        "refunds-1-0",
+        "shipping-1-0"
+      ],
+      "generated_evidence_ids": [
+        "accounts-1-0",
+        "payments-1-0"
+      ],
+      "expected_action": "ABSTAIN",
+      "predicted_action": "ABSTAIN",
+      "decision_correct": true,
+      "recall_at_1": 0.5,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.6666666666666666,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.333,
+      "clarify_correct": null,
+      "abstain_correct": true,
+      "escalate_correct": null,
+      "resolve_correct": null,
+      "latency_seconds": 6.018843124998966,
+      "draft_response": "For your security, please do not share your one-time authentication code or any other sensitive information with support. If your account is locked, please use the approved account recovery process available through your registered email or official channels. Additional identity verification may be required as part of this process to ensure your account is protected.",
+      "gold_resolution": "No. Authentication codes are sensitive and should not be requested through support. Use the approved account recovery or verification procedure.",
+      "confidence": 0.553
+    },
+    {
+      "id": "eval-28",
+      "question": "Someone accessed my account and I think it is compromised. Can support just disable the security checks?",
+      "gold_evidence_ids": [
+        "accounts-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "accounts-1-0",
+        "payments-1-0",
+        "subscriptions-1-0",
+        "warranty-1-0",
+        "refunds-1-0",
+        "shipping-1-0"
+      ],
+      "generated_evidence_ids": [
+        "accounts-1-0"
+      ],
+      "expected_action": "ESCALATE",
+      "predicted_action": "ESCALATE",
+      "decision_correct": true,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.3333333333333333,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.25,
+      "clarify_correct": null,
+      "abstain_correct": null,
+      "escalate_correct": true,
+      "resolve_correct": null,
+      "latency_seconds": 4.4789481250045355,
+      "draft_response": "Thank you for contacting us. We understand your concern about the security of your account. For your protection, we do not disable security checks, as they are essential to safeguard your information. We recommend that you reset your password immediately through the official recovery process and review your recent account activity for any unauthorized actions. We are escalating this matter to our Account Security team for further investigation and assistance. They will reach out to you if additional verification is needed to secure your account.",
+      "gold_resolution": "Do not bypass security controls. Recommend the official recovery flow, review recent account activity, and escalate suspected compromise to Account Security.",
+      "confidence": 0.532
+    },
+    {
+      "id": "eval-29",
+      "question": "I bought a gift card and changed my mind. Can I return it for a refund?",
+      "gold_evidence_ids": [
+        "refunds-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "refunds-1-0",
+        "payments-1-0",
+        "shipping-1-0",
+        "subscriptions-1-0",
+        "warranty-1-0",
+        "accounts-1-0"
+      ],
+      "generated_evidence_ids": [
+        "refunds-1-0"
+      ],
+      "expected_action": "RESOLVE",
+      "predicted_action": "RESOLVE",
+      "decision_correct": true,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.3333333333333333,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.25,
+      "clarify_correct": null,
+      "abstain_correct": null,
+      "escalate_correct": null,
+      "resolve_correct": true,
+      "latency_seconds": 4.261205166003492,
+      "draft_response": "Thank you for reaching out. As per our refund policy, gift cards are non-refundable except where required by applicable law. Therefore, we are unable to process a refund for your gift card purchase. If you have any other concerns or questions, please let us know.",
+      "gold_resolution": "Gift cards are non-refundable except where required by applicable law.",
+      "confidence": 0.682
+    },
+    {
+      "id": "eval-30",
+      "question": "The item was delivered damaged 9 days ago. I just noticed the damage. Does the damaged-item policy still apply?",
+      "gold_evidence_ids": [
+        "refunds-1-0",
+        "shipping-1-0"
+      ],
+      "retrieved_evidence_ids": [
+        "shipping-1-0",
+        "refunds-1-0",
+        "warranty-1-0",
+        "payments-1-0",
+        "subscriptions-1-0",
+        "accounts-1-0"
+      ],
+      "generated_evidence_ids": [
+        "refunds-1-0",
+        "shipping-1-0"
+      ],
+      "expected_action": "ESCALATE",
+      "predicted_action": "ESCALATE",
+      "decision_correct": true,
+      "recall_at_1": 0.5,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "precision_at_3": 0.6666666666666666,
+      "mrr": 1.0,
+      "ndcg_at_5": 1.0,
+      "evidence_coverage": 1.0,
+      "groundedness": 0.1,
+      "clarify_correct": null,
+      "abstain_correct": null,
+      "escalate_correct": true,
+      "resolve_correct": null,
+      "latency_seconds": 3.3075688330063713,
+      "draft_response": "Thank you for reaching out to us. We understand your concern about the damaged item. However, per our policy, damaged items should be reported within 7 days of delivery. Since your report was made after 9 days, we need to escalate this matter for a special exception review. Please allow us some time to get back to you with an update.",
+      "gold_resolution": "The policy asks customers to report damaged or incorrect items within 7 days of delivery, so this falls outside the stated reporting window. Do not promise a refund or replacement; review the case under the applicable exception/escalation process.",
+      "confidence": 0.495
+    }
+  ]
+}
