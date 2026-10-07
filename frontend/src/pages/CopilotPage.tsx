@@ -1,10 +1,11 @@
-import { useState, useCallback } from 'react';
-import type { CustomerContext, ResolveResponse, PipelineStep } from '../types/api';
-import { createTicket, resolveTicket, submitFeedback } from '../api/client';
+import { useState, useCallback, useEffect } from 'react';
+import type { CustomerContext, ResolveResponse, PipelineStep, TicketListItem } from '../types/api';
+import { createTicket, resolveTicket, submitFeedback, getTicket, listTickets } from '../api/client';
 import { ChatPanel } from '../components/Chat/ChatPanel';
 import { ResolutionPanel } from '../components/Resolution/ResolutionPanel';
 import { EvidencePanel } from '../components/Evidence/EvidencePanel';
 import { FeedbackPanel } from '../components/Feedback/FeedbackPanel';
+import { subscribeLiveEvents, broadcastLiveEvent, type LiveEvent } from '../lib/liveSync';
 
 // Pipeline steps and approximate timing for UI progression
 const PIPELINE_STEPS: PipelineStep[] = [
@@ -40,6 +41,15 @@ function usePipelineAnimation() {
   return { step, animate, reset };
 }
 
+interface InboundTicketItem {
+  ticketId: number;
+  message: string;
+  context: CustomerContext;
+  status: 'pending' | 'resolved' | 'escalated';
+  result?: ResolveResponse;
+  timestamp: string;
+}
+
 // ─── Copilot Page ─────────────────────────────────────────────────────────────
 
 export function CopilotPage() {
@@ -53,6 +63,141 @@ export function CopilotPage() {
   const [editedDraft, setEditedDraft]   = useState('');
   const { step: pipelineStep, animate, reset } = usePipelineAnimation();
 
+  // Real-time live queue state
+  const [liveQueue, setLiveQueue]       = useState<InboundTicketItem[]>([]);
+  const [autoSync, setAutoSync]         = useState(true);
+  const [liveAlert, setLiveAlert]       = useState<string | null>(null);
+  const [feedbackAlert, setFeedbackAlert] = useState<string | null>(null);
+
+  // Load ticket into workspace
+  const loadTicketIntoWorkspace = useCallback(async (tId: number, queryMsg?: string, res?: ResolveResponse) => {
+    setIsLoading(true);
+    setError('');
+    setTicketId(tId);
+    setHumanStatus('pending');
+    setShowFeedback(false);
+
+    if (res) {
+      setResult(res);
+      setEditedDraft(res.draft_response);
+      if (queryMsg) setCurrentMessage(queryMsg);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const detail = await getTicket(tId);
+      setCurrentMessage(detail.customer_message);
+      if (detail.draft) {
+        const syntheticResponse: ResolveResponse = {
+          draft_id: detail.draft.id,
+          summary: detail.draft.summary,
+          resolution: detail.draft.resolution,
+          draft_response: detail.draft.draft_response,
+          evidence_ids: detail.draft.evidence ? detail.draft.evidence.map((e) => e.id) : [],
+          retrieved_evidence_ids: detail.draft.evidence ? detail.draft.evidence.map((e) => e.id) : [],
+          retrieved_evidence: detail.draft.evidence ? detail.draft.evidence.map((e) => ({ id: e.id, score: e.score, title: e.title })) : [],
+          confidence: detail.draft.confidence,
+          requires_review: !detail.draft.verification?.passed,
+          decision: detail.draft.decision,
+          verification: detail.draft.verification,
+          context: detail.context,
+          evidence: detail.draft.evidence || [],
+          conflicts: [],
+          resolution_memory: [],
+        };
+        setResult(syntheticResponse);
+        setEditedDraft(detail.draft.draft_response);
+      }
+    } catch (err: unknown) {
+      const errText = err instanceof Error ? err.message : 'Failed to load ticket';
+      setError(errText);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Subscribe to real-time live events
+  useEffect(() => {
+    const unsubscribe = subscribeLiveEvents((event: LiveEvent) => {
+      if (event.type === 'CUSTOMER_QUERY_SUBMITTED') {
+        const item: InboundTicketItem = {
+          ticketId: event.ticketId,
+          message: event.message,
+          context: event.context,
+          status: 'pending',
+          timestamp: event.timestamp,
+        };
+
+        setLiveQueue((prev) => {
+          const filtered = prev.filter((p) => p.ticketId !== event.ticketId);
+          return [item, ...filtered].slice(0, 8);
+        });
+
+        setLiveAlert(`⚡ Inbound Customer Inquiry: Ticket #${event.ticketId} — "${event.message.slice(0, 50)}…"`);
+        setTimeout(() => setLiveAlert(null), 6000);
+      }
+
+      if (event.type === 'TICKET_RESOLVED_BY_AI') {
+        setLiveQueue((prev) =>
+          prev.map((item) =>
+            item.ticketId === event.ticketId
+              ? { ...item, result: event.result }
+              : item,
+          ),
+        );
+
+        // If autoSync is enabled, immediately load the live resolution into the copilot workspace!
+        if (autoSync) {
+          loadTicketIntoWorkspace(event.ticketId, event.message, event.result);
+        }
+      }
+
+      if (event.type === 'CUSTOMER_FEEDBACK_GIVEN') {
+        const ratingText = event.feedbackType === 'up' ? '👍 Helpful (5/5)' : '👎 Needs revision';
+        setFeedbackAlert(`⭐ Real-time Customer Feedback: Ticket #${event.ticketId} received ${ratingText}! Knowledge loop updated.`);
+        setTimeout(() => setFeedbackAlert(null), 7000);
+
+        setLiveQueue((prev) =>
+          prev.map((item) =>
+            item.ticketId === event.ticketId
+              ? { ...item, status: 'resolved' }
+              : item,
+          ),
+        );
+      }
+    });
+
+    return unsubscribe;
+  }, [autoSync, loadTicketIntoWorkspace]);
+
+  // Periodic sync from database to populate initial recent queue
+  useEffect(() => {
+    let isMounted = true;
+    const fetchRecent = () => {
+      listTickets()
+        .then((tickets: TicketListItem[]) => {
+          if (!isMounted) return;
+          const mapped: InboundTicketItem[] = tickets.slice(0, 6).map((t) => ({
+            ticketId: t.id,
+            message: t.customer_message,
+            context: t.context,
+            status: t.status === 'resolved' ? 'resolved' : 'pending',
+            timestamp: 'Recent',
+          }));
+          setLiveQueue(mapped);
+        })
+        .catch(() => {});
+    };
+
+    fetchRecent();
+    const interval = setInterval(fetchRecent, 5000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
+
   const handleResolve = useCallback(
     async (message: string, context: CustomerContext) => {
       setIsLoading(true);
@@ -64,15 +209,32 @@ export function CopilotPage() {
       reset();
 
       try {
-        // Animate pipeline while the actual call runs
         const [ticket] = await Promise.all([
           createTicket(message, context),
           animate(),
         ]);
         setTicketId(ticket.id);
+
+        broadcastLiveEvent({
+          type: 'CUSTOMER_QUERY_SUBMITTED',
+          ticketId: ticket.id,
+          message,
+          context,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        });
+
         const resolution = await resolveTicket(ticket.id);
         setResult(resolution);
         setEditedDraft(resolution.draft_response);
+
+        broadcastLiveEvent({
+          type: 'TICKET_RESOLVED_BY_AI',
+          ticketId: ticket.id,
+          message,
+          context,
+          result: resolution,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        });
       } catch (e) {
         const msg = e instanceof Error ? e.message : 'Unable to reach ResolveIQ backend.';
         setError(msg);
@@ -97,6 +259,15 @@ export function CopilotPage() {
         });
         setHumanStatus('approved');
         setShowFeedback(true);
+
+        // Broadcast real-time approval back to Customer Portal
+        broadcastLiveEvent({
+          type: 'HUMAN_ACTION_TAKEN',
+          ticketId,
+          action: isEdited ? 'edited' : 'approved',
+          finalResponse: response,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        });
       } catch (e) {
         const msg = e instanceof Error ? e.message : 'Failed to record approval.';
         setError(msg);
@@ -111,6 +282,13 @@ export function CopilotPage() {
       await submitFeedback(ticketId, { decision: 'rejected', rating: 1, reason: 'Escalated by human agent' });
       setHumanStatus('escalated');
       setShowFeedback(true);
+
+      broadcastLiveEvent({
+        type: 'HUMAN_ACTION_TAKEN',
+        ticketId,
+        action: 'escalated',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      });
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Failed to record escalation.';
       setError(msg);
@@ -121,6 +299,13 @@ export function CopilotPage() {
     if (!ticketId) return;
     try {
       await submitFeedback(ticketId, { decision: 'rejected', rating: 2, reason: 'Agent requested customer clarification' });
+
+      broadcastLiveEvent({
+        type: 'HUMAN_ACTION_TAKEN',
+        ticketId,
+        action: 'clarified',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      });
     } catch {
       // non-critical
     }
@@ -128,6 +313,64 @@ export function CopilotPage() {
 
   return (
     <div style={{ display: 'flex', flex: 1, overflow: 'hidden', flexDirection: 'column' }}>
+      {/* Real-time Inbound Queue Bar */}
+      <div className="copilot-live-bar">
+        <div className="copilot-live-status">
+          <span className="copilot-live-dot" />
+          <span className="copilot-live-title">LIVE INBOUND STREAM</span>
+          <span className="copilot-live-badge">Auto-Sync Active</span>
+        </div>
+
+        {/* Live Inbound Inquiries Chips */}
+        <div className="copilot-live-chips">
+          {liveQueue.map((item) => (
+            <button
+              key={item.ticketId}
+              className={`copilot-queue-chip ${ticketId === item.ticketId ? 'active' : ''} ${item.status === 'pending' ? 'pending' : ''}`}
+              onClick={() => loadTicketIntoWorkspace(item.ticketId, item.message, item.result)}
+              title={`Click to review Ticket #${item.ticketId}: ${item.message}`}
+            >
+              <span className="copilot-queue-chip-id">#{item.ticketId}</span>
+              <span className="copilot-queue-chip-text">
+                {item.message.slice(0, 30)}{item.message.length > 30 ? '…' : ''}
+              </span>
+              <span className={`copilot-queue-chip-status ${item.status}`}>
+                {item.status === 'pending' ? 'Review' : 'Resolved'}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Auto-Sync Toggle */}
+        <div className="copilot-live-controls">
+          <label className="copilot-auto-toggle" title="Automatically load new inbound inquiries into workspace">
+            <input
+              type="checkbox"
+              checked={autoSync}
+              onChange={(e) => setAutoSync(e.target.checked)}
+            />
+            <span>Auto-Load Inbound</span>
+          </label>
+        </div>
+      </div>
+
+      {/* Real-Time Live Notification Alerts */}
+      {liveAlert && (
+        <div className="copilot-live-alert" role="status">
+          <span className="copilot-live-alert-icon">⚡</span>
+          <span>{liveAlert}</span>
+          <button onClick={() => setLiveAlert(null)} aria-label="Dismiss alert">✕</button>
+        </div>
+      )}
+
+      {feedbackAlert && (
+        <div className="copilot-feedback-alert" role="status">
+          <span className="copilot-feedback-alert-icon">⭐</span>
+          <span>{feedbackAlert}</span>
+          <button onClick={() => setFeedbackAlert(null)} aria-label="Dismiss alert">✕</button>
+        </div>
+      )}
+
       {/* Error banner */}
       {error && (
         <div

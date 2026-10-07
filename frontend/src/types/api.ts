@@ -155,11 +155,21 @@ export type PipelineStep =
   | 'done'
   | 'error';
 
-export type AppPage = 'copilot' | 'memory' | 'analytics' | 'gaps';
+export type AppPage = 'copilot' | 'customer' | 'memory' | 'analytics' | 'gaps';
 
 export interface DemoScenario {
   label: string;
   message: string;
   context: CustomerContext;
   expectedDecision: Decision;
+}
+
+export type UserRole = 'admin' | 'user';
+
+export interface AuthUser {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  tier?: string;
 }

@@ -5,6 +5,7 @@ import type {
   AnalyticsOverview,
   KnowledgeGap,
   TicketListItem,
+  TicketDetail,
 } from '../types/api';
 
 const BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8080/api/v1';
@@ -67,6 +68,10 @@ export async function resolveTicket(ticketId: number): Promise<ResolveResponse> 
 
 export async function listTickets(): Promise<TicketListItem[]> {
   return request('/tickets');
+}
+
+export async function getTicket(ticketId: number): Promise<TicketDetail> {
+  return request(`/tickets/${ticketId}`);
 }
 
 // ─── Feedback ─────────────────────────────────────────────────────────────────
