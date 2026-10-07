@@ -1,8 +1,144 @@
-import React,{useState} from 'react'; import {createRoot} from 'react-dom/client'; import './style.css';
-const API=import.meta.env.VITE_API_URL||'http://localhost:8000/api/v1';
-type Result=any;
-function App(){const [message,setMessage]=useState('I was charged twice for my premium subscription.'); const [ticket,setTicket]=useState<Result>(null); const [loading,setLoading]=useState(false); const [edited,setEdited]=useState('');
-async function resolve(){setLoading(true); try{const t=await fetch(API+'/tickets',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({customer_message:message,customer_context:{product:'premium',region:'IN',customer_segment:'student'}})}).then(r=>r.json()); const x=await fetch(API+`/tickets/${t.id}/resolve`,{method:'POST'}).then(r=>r.json()); setTicket(x); setEdited(x.draft_response);}finally{setLoading(false)}}
-async function feedback(decision:string){if(!ticket)return; await fetch(API+`/tickets/${ticket.id}/feedback`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({decision,edited_response:edited,rating:decision==='rejected'?2:5})}); alert('Feedback recorded');}
-return <main><header><div><span className="eyebrow">RESOLUTION INTELLIGENCE</span><h1>ResolveIQ</h1><p>Retrieve → Resolve → Verify → Human Review → Learn</p></div><span className="pill">Human-in-the-loop</span></header><section className="grid"><div className="card"><h2>Customer issue</h2><textarea value={message} onChange={e=>setMessage(e.target.value)}/><button onClick={resolve} disabled={loading}>{loading?'Resolving…':'Resolve ticket'}</button></div>{ticket?<><div className="card"><h2>AI resolution</h2><div className="metric"><b>{Math.round(ticket.confidence*100)}%</b><span>confidence</span></div><h3>Summary</h3><p>{ticket.summary}</p><h3>Suggested resolution</h3><p>{ticket.resolution}</p><div className="decision">{ticket.decision}</div></div><div className="card wide"><h2>Draft response</h2><textarea value={edited} onChange={e=>setEdited(e.target.value)}/><div className="actions"><button onClick={()=>feedback('edited')}>Approve edited</button><button onClick={()=>feedback('approved')}>Approve</button><button className="danger" onClick={()=>feedback('rejected')}>Reject</button></div><h2>Evidence & verification</h2><div className="evidence">{ticket.evidence.map((e:any)=><article key={e.id}><b>{e.title}</b><small>{e.source_type} · score {e.score}</small><p>{e.content}</p></article>)}</div><pre>{JSON.stringify(ticket.verification,null,2)}</pre></div></>:<div className="card empty"><h2>Resolution workspace</h2><p>Submit a support question to see context extraction, evidence, verification and a reviewable response.</p></div>}</section></main>}
-createRoot(document.getElementById('root')!).render(<React.StrictMode><App/></React.StrictMode>);
+import React, { useState } from 'react';
+import { createRoot } from 'react-dom/client';
+import './style.css';
+import type { AppPage } from './types/api';
+import { CopilotPage } from './pages/CopilotPage';
+import { ResolutionMemoryPage } from './components/Memory/ResolutionMemory';
+import { AnalyticsDashboard, KnowledgeGapsPage } from './components/Analytics/AnalyticsDashboard';
+
+// ─── Nav Items ────────────────────────────────────────────────────────────────
+
+const NAV_ITEMS: { id: AppPage; label: string; icon: React.ReactNode }[] = [
+  {
+    id: 'copilot',
+    label: 'Copilot',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'memory',
+    label: 'Resolution Memory',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'analytics',
+    label: 'Analytics',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'gaps',
+    label: 'Knowledge Gaps',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+    ),
+  },
+];
+
+// ─── App ──────────────────────────────────────────────────────────────────────
+
+function App() {
+  const [page, setPage] = useState<AppPage>('copilot');
+  const [backendOk, setBackendOk] = useState<boolean | null>(null);
+
+  // Quick health check
+  React.useEffect(() => {
+    const api = import.meta.env.VITE_API_URL ?? 'http://localhost:8080/api/v1';
+    fetch(`${api}/analytics/overview`, { signal: AbortSignal.timeout(5000) })
+      .then((r) => setBackendOk(r.ok))
+      .catch(() => setBackendOk(false));
+  }, []);
+
+  return (
+    <div className="app-shell">
+      {/* Top bar */}
+      <header className="topbar" role="banner">
+        {/* Logo */}
+        <a className="topbar__logo" href="#" aria-label="ResolveIQ Home">
+          <div className="topbar__logo-mark" aria-hidden="true">R</div>
+          <div>
+            <span className="topbar__logo-text">ResolveIQ</span>
+            <span className="topbar__logo-sub">Resolution Intelligence</span>
+          </div>
+        </a>
+
+        {/* Navigation */}
+        <nav className="topbar__nav" aria-label="Main navigation">
+          {NAV_ITEMS.map(({ id, label, icon }) => (
+            <button
+              key={id}
+              id={`nav-${id}`}
+              className={`topbar__nav-btn ${page === id ? 'active' : ''}`}
+              onClick={() => setPage(id)}
+              aria-current={page === id ? 'page' : undefined}
+              aria-label={label}
+            >
+              {icon}
+              {label}
+            </button>
+          ))}
+        </nav>
+
+        {/* Right side */}
+        <div className="topbar__right">
+          {/* Azure status */}
+          <div className="status-dot" title={backendOk === null ? 'Checking backend…' : backendOk ? 'Backend connected' : 'Backend offline'}>
+            <div
+              className={`status-dot__indicator ${backendOk === false ? 'offline' : ''}`}
+              aria-label={backendOk === false ? 'Backend offline' : 'Backend connected'}
+            />
+            <span style={{ display: 'none' }}>
+              {backendOk === null ? '…' : backendOk ? 'Azure AI' : 'Offline'}
+            </span>
+            Azure AI
+          </div>
+
+          {/* User avatar */}
+          <div className="avatar" aria-label="User menu" role="button" tabIndex={0}>
+            AM
+          </div>
+        </div>
+      </header>
+
+      {/* Body */}
+      <main className="app-body" role="main">
+        {page === 'copilot'    && <CopilotPage />}
+        {page === 'memory'     && (
+          <div style={{ flex: 1, overflow: 'hidden', display: 'flex' }}>
+            <ResolutionMemoryPage />
+          </div>
+        )}
+        {page === 'analytics'  && (
+          <div style={{ flex: 1, overflow: 'hidden', display: 'flex' }}>
+            <AnalyticsDashboard />
+          </div>
+        )}
+        {page === 'gaps'       && (
+          <div style={{ flex: 1, overflow: 'hidden', display: 'flex' }}>
+            <KnowledgeGapsPage />
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
+
+createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+);
