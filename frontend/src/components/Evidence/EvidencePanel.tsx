@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { EvidenceItem, ResolveResponse } from '../../types/api';
-import { EvidenceGraph } from './EvidenceGraph';
+import { InteractiveProvenanceGraph } from './InteractiveProvenanceGraph';
 import { SectionTitle, EmptyState } from '../common';
 
 // ─── Authority label ──────────────────────────────────────────────────────────
@@ -94,6 +94,7 @@ type Tab = 'graph' | 'evidence' | 'verification';
 export function EvidencePanel({ result, humanStatus }: EvidencePanelProps) {
   const [tab, setTab] = useState<Tab>('graph');
   const [selectedEvidence, setSelectedEvidence] = useState<EvidenceItem | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   function TabBtn({ id, label }: { id: Tab; label: string }) {
     return (
@@ -140,48 +141,57 @@ export function EvidencePanel({ result, humanStatus }: EvidencePanelProps) {
         <>
           {/* Graph tab */}
           {tab === 'graph' && (
-            <div className="panel__body--no-pad" style={{ height: selectedEvidence ? 'calc(100% - 200px)' : '100%' }}>
-              <div style={{ padding: '6px 12px 0', display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--text-tertiary)' }}>
-                  Evidence Provenance Graph
+            <div className="panel__body--no-pad" style={{ height: 'calc(100% - 46px)', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ padding: '6px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-subtle)', background: 'var(--bg-card)' }}>
+                <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--brand-cyan)' }}>
+                  Provenance Graph
                 </span>
-                <span style={{ fontSize: 10, color: 'var(--text-tertiary)' }}>· click node to inspect</span>
+                <button
+                  className="btn-graph-fullscreen"
+                  onClick={() => setIsFullscreen(true)}
+                  title="Expand to Fullscreen Interactive Graph"
+                >
+                  ⛶ Expand Fullscreen
+                </button>
               </div>
-              <div style={{ height: selectedEvidence ? 'calc(100% - 28px)' : 'calc(100% - 28px)' }}>
-                <EvidenceGraph
+              <div style={{ flex: 1, minHeight: 380, position: 'relative' }}>
+                <InteractiveProvenanceGraph
                   result={result}
                   humanStatus={humanStatus}
-                  onNodeClick={setSelectedEvidence}
+                  height="100%"
                 />
               </div>
-              {selectedEvidence && (
-                <div className="evidence-detail">
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--sp-2)' }}>
-                    <div className="evidence-detail__title">{selectedEvidence.title}</div>
-                    <button
-                      className="btn btn--ghost btn--sm"
-                      onClick={() => setSelectedEvidence(null)}
-                      aria-label="Close evidence detail"
-                    >✕</button>
-                  </div>
-                  <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
-                    <span style={{ fontSize: 10, padding: '1px 6px', background: 'var(--bg-input)', border: '1px solid var(--border-default)', borderRadius: 4, color: 'var(--text-secondary)' }}>
-                      {selectedEvidence.source_type}
-                    </span>
-                    <span style={{ fontSize: 10, padding: '1px 6px', background: 'var(--bg-input)', border: '1px solid var(--border-default)', borderRadius: 4, color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
-                      score {selectedEvidence.score}
-                    </span>
-                    {selectedEvidence.metadata.authority !== undefined && (() => {
-                      const { label, color } = authorityLabel(selectedEvidence.metadata.authority);
-                      return (
-                        <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 4, color, border: `1px solid ${color}`, background: 'transparent' }}>
-                          {label}
-                        </span>
-                      );
-                    })()}
-                  </div>
-                  <div className="evidence-detail__content">
-                    {selectedEvidence.content.slice(0, 400)}{selectedEvidence.content.length > 400 ? '…' : ''}
+
+              {isFullscreen && (
+                <div className="graph-fullscreen-overlay" onClick={() => setIsFullscreen(false)}>
+                  <div className="graph-fullscreen-card" onClick={(e) => e.stopPropagation()}>
+                    <div className="graph-fullscreen-header">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <span style={{ fontSize: 20 }}>⬡</span>
+                        <div>
+                          <h3 style={{ margin: 0, fontSize: 16, color: 'var(--text-primary)' }}>
+                            Resolution &amp; Evidence Provenance Graph
+                          </h3>
+                          <span style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>
+                            Tracing prompt $\to$ policy evidences $\to$ prior user memory $\to$ arbitration $\to$ response
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        className="ticket-modal-close-btn"
+                        onClick={() => setIsFullscreen(false)}
+                        aria-label="Close fullscreen graph"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <div style={{ flex: 1, overflow: 'hidden' }}>
+                      <InteractiveProvenanceGraph
+                        result={result}
+                        humanStatus={humanStatus}
+                        height="100%"
+                      />
+                    </div>
                   </div>
                 </div>
               )}
@@ -248,6 +258,38 @@ export function EvidencePanel({ result, humanStatus }: EvidencePanelProps) {
                     </div>
                   ))}
                 </>
+              )}
+
+              {selectedEvidence && (
+                <div className="evidence-detail" style={{ marginTop: 'var(--sp-3)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--sp-2)' }}>
+                    <div className="evidence-detail__title">{selectedEvidence.title}</div>
+                    <button
+                      className="btn btn--ghost btn--sm"
+                      onClick={() => setSelectedEvidence(null)}
+                      aria-label="Close evidence detail"
+                    >✕</button>
+                  </div>
+                  <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: 10, padding: '1px 6px', background: 'var(--bg-input)', border: '1px solid var(--border-default)', borderRadius: 4, color: 'var(--text-secondary)' }}>
+                      {selectedEvidence.source_type}
+                    </span>
+                    <span style={{ fontSize: 10, padding: '1px 6px', background: 'var(--bg-input)', border: '1px solid var(--border-default)', borderRadius: 4, color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
+                      score {selectedEvidence.score}
+                    </span>
+                    {selectedEvidence.metadata.authority !== undefined && (() => {
+                      const { label, color } = authorityLabel(selectedEvidence.metadata.authority);
+                      return (
+                        <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 4, color, border: `1px solid ${color}`, background: 'transparent' }}>
+                          {label}
+                        </span>
+                      );
+                    })()}
+                  </div>
+                  <div className="evidence-detail__content">
+                    {selectedEvidence.content}
+                  </div>
+                </div>
               )}
             </div>
           )}

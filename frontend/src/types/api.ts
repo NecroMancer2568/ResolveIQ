@@ -155,7 +155,7 @@ export type PipelineStep =
   | 'done'
   | 'error';
 
-export type AppPage = 'copilot' | 'customer' | 'memory' | 'analytics' | 'gaps';
+export type AppPage = 'copilot' | 'customer' | 'graph' | 'memory' | 'analytics' | 'gaps';
 
 export interface DemoScenario {
   label: string;

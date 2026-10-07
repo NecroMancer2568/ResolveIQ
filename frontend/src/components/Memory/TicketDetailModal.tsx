@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import type { TicketDetail, EvidenceItem } from '../../types/api';
+import type { TicketDetail, EvidenceItem, ResolveResponse } from '../../types/api';
 import { getTicket } from '../../api/client';
 import { DecisionBadge, StatusPill, Spinner, EmptyState } from '../common';
+import { InteractiveProvenanceGraph } from '../Evidence/InteractiveProvenanceGraph';
 
 interface TicketDetailModalProps {
   ticketId: number;
   onClose: () => void;
 }
 
-type TabType = 'overview' | 'evidence' | 'verification';
+type TabType = 'overview' | 'graph' | 'evidence' | 'verification';
 
 export function TicketDetailModal({ ticketId, onClose }: TicketDetailModalProps) {
   const [detail, setDetail] = useState<TicketDetail | null>(null);
@@ -154,6 +155,12 @@ export function TicketDetailModal({ ticketId, onClose }: TicketDetailModalProps)
                 Overview & Resolution
               </button>
               <button
+                className={`ticket-modal-tab ${activeTab === 'graph' ? 'active' : ''}`}
+                onClick={() => setActiveTab('graph')}
+              >
+                Provenance Graph ⬡
+              </button>
+              <button
                 className={`ticket-modal-tab ${activeTab === 'evidence' ? 'active' : ''}`}
                 onClick={() => setActiveTab('evidence')}
               >
@@ -238,6 +245,40 @@ export function TicketDetailModal({ ticketId, onClose }: TicketDetailModalProps)
                         sub="This ticket was created but has not been resolved by the AI copilot yet."
                       />
                     </div>
+                  )}
+                </div>
+              )}
+
+              {/* Tab: Graph */}
+              {activeTab === 'graph' && (
+                <div style={{ height: 480, minHeight: 480, width: '100%', borderRadius: 8, overflow: 'hidden', border: '1px solid var(--border-subtle)', background: 'var(--bg-card)' }}>
+                  {draft ? (
+                    <InteractiveProvenanceGraph
+                      result={{
+                        draft_id: draft.id,
+                        summary: draft.summary,
+                        resolution: draft.resolution,
+                        draft_response: draft.draft_response,
+                        evidence_ids: draft.evidence ? draft.evidence.map(e => e.id) : [],
+                        retrieved_evidence_ids: draft.evidence ? draft.evidence.map(e => e.id) : [],
+                        retrieved_evidence: draft.evidence ? draft.evidence.map(e => ({ id: e.id, score: e.score, title: e.title })) : [],
+                        confidence: draft.confidence,
+                        requires_review: false,
+                        decision: draft.decision,
+                        context: detail.context,
+                        evidence: draft.evidence ?? [],
+                        conflicts: [],
+                        verification: draft.verification,
+                        resolution_memory: (draft as any).resolution_memory ?? [],
+                      }}
+                      height={480}
+                    />
+                  ) : (
+                    <EmptyState
+                      icon="⬡"
+                      title="No Provenance Graph Available"
+                      sub="This ticket does not have an associated resolution draft."
+                    />
                   )}
                 </div>
               )}
