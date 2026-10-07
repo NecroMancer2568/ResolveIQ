@@ -3,9 +3,10 @@ import type { AuthUser, UserRole } from '../types/api';
 
 interface AuthPageProps {
   onLogin: (user: AuthUser) => void;
+  onBackToLanding?: () => void;
 }
 
-export function AuthPage({ onLogin }: AuthPageProps) {
+export function AuthPage({ onLogin, onBackToLanding }: AuthPageProps) {
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [role, setRole] = useState<UserRole>('user');
   const [name, setName] = useState('');
@@ -59,6 +60,20 @@ export function AuthPage({ onLogin }: AuthPageProps) {
   return (
     <div className="auth-page">
       <div className="auth-container">
+        {onBackToLanding && (
+          <div style={{ marginBottom: 16 }}>
+            <button
+              type="button"
+              onClick={onBackToLanding}
+              className="btn btn--ghost btn--sm"
+              style={{ color: 'var(--text-tertiary)', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+            >
+              <span>←</span>
+              <span>Back to ResolveIQ Overview</span>
+            </button>
+          </div>
+        )}
+
         {/* Brand Header */}
         <div className="auth-brand">
           <div className="auth-logo-mark" aria-hidden="true">R</div>

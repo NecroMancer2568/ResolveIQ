@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './style.css';
-import type { AppPage, AuthUser } from './types/api';
+import type { AppPage, AuthUser, UserRole } from './types/api';
 import { AuthPage } from './pages/AuthPage';
 import { CopilotPage } from './pages/CopilotPage';
 import { CustomerChatPage } from './pages/CustomerChatPage';
 import { ResolutionMemoryPage } from './components/Memory/ResolutionMemory';
 import { AnalyticsDashboard, KnowledgeGapsPage } from './components/Analytics/AnalyticsDashboard';
 import { ProvenanceGraphPage } from './pages/ProvenanceGraphPage';
+import { LandingPage } from './pages/LandingPage';
 
 // ─── Admin Navigation Items ───────────────────────────────────────────────────
 
@@ -86,6 +87,11 @@ function App() {
     }
   });
 
+  const [viewMode, setViewMode] = useState<'landing' | 'auth' | 'app'>(() => {
+    const saved = localStorage.getItem('resolveiq_auth_user');
+    return saved ? 'app' : 'landing';
+  });
+
   const [page, setPage] = useState<AppPage>('copilot');
   const [backendOk, setBackendOk] = useState<boolean | null>(null);
 
@@ -100,6 +106,33 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem('resolveiq_auth_user');
     setUser(null);
+    setViewMode('landing');
+  };
+
+  const handleQuickDemoLogin = (selectedRole: UserRole) => {
+    const demoUser: AuthUser = selectedRole === 'admin'
+      ? {
+          id: 'admin-01',
+          name: 'Sarah Connor',
+          email: 'sarah.hitl@resolveiq.ai',
+          role: 'admin',
+        }
+      : {
+          id: 'user-01',
+          name: 'Alex Morgan',
+          email: 'alex.morgan@novamart.io',
+          role: 'user',
+          tier: 'pro',
+        };
+
+    localStorage.setItem('resolveiq_auth_user', JSON.stringify(demoUser));
+    setUser(demoUser);
+    setViewMode('app');
+    if (demoUser.role === 'user') {
+      setPage('customer');
+    } else {
+      setPage('copilot');
+    }
   };
 
   const handleSwitchProfile = () => {
@@ -128,18 +161,30 @@ function App() {
     }
   };
 
-  // If not logged in, render Auth page
-  if (!user) {
+  // If user is on landing page or not authenticated
+  if (viewMode === 'landing') {
+    return (
+      <LandingPage
+        onGetStarted={() => setViewMode('auth')}
+        onQuickDemoLogin={handleQuickDemoLogin}
+      />
+    );
+  }
+
+  // If on login/signup page
+  if (viewMode === 'auth' || !user) {
     return (
       <AuthPage
         onLogin={(loggedInUser) => {
           setUser(loggedInUser);
+          setViewMode('app');
           if (loggedInUser.role === 'user') {
             setPage('customer');
           } else {
             setPage('copilot');
           }
         }}
+        onBackToLanding={() => setViewMode('landing')}
       />
     );
   }
@@ -211,6 +256,15 @@ function App() {
             title={isCustomer ? 'Switch to Admin Supervisor view' : 'Switch to Customer Chat view'}
           >
             {isCustomer ? 'Switch to Admin 🛡️' : 'Switch to Customer 💬'}
+          </button>
+
+          {/* View Landing Page */}
+          <button
+            className="topbar__switch-btn"
+            onClick={() => setViewMode('landing')}
+            title="View ResolveIQ Landing Page Overview"
+          >
+            Overview 🌐
           </button>
 
           {/* Logout Button */}
